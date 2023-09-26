@@ -13,7 +13,6 @@ build-type:     Simple
 library
   exposed-modules:
       DeriveHasField
-      Lib
   other-modules:
       Paths_derive_has_field
   hs-source-dirs:
@@ -27,7 +26,7 @@ library
       TypeApplications
   build-depends:
       base >=4.7 && <5
-    , template-haskell >=2.5 && <2.22
+    , template-haskell
     , th-abstraction >0.4 && <0.7
   default-language: Haskell2010
 
@@ -51,6 +50,6 @@ test-suite derive-has-field-test
       base >=4.7 && <5
     , derive-has-field
     , hspec
-    , template-haskell >=2.5 && <2.22
+    , template-haskell
     , th-abstraction >0.4 && <0.7
   default-language: Haskell2010

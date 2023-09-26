@@ -7,9 +7,6 @@ hpack:
 test: hpack
 	cabal --ghc-options='${GHC_OPTIONS}' test
 
-run: hpack
-	cabal --ghc-options='${GHC_OPTIONS}' run
-
 format-haskell:
 	find src/ test/ -name "*.hs" -exec fourmolu -i {} +
 
