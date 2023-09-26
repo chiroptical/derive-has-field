@@ -1,5 +1,18 @@
 name:    derive-has-field
-version: "0.0.1.0"
+version: 0.0.1.0
+github: "chiroptical/snail"
+license: MIT
+author: "Barry Moore II"
+maintainer: "chiroptical@gmail.com"
+copyright: "Barry Moore II"
+synopsis: Derive HasField instances with Template Haskell
+
+description:
+  A Template Haskell function to derive HasField instances to utilize
+  OverloadedRecordDot more effectively.
+
+extra-source-files:
+- README.md
 
 dependencies:
 - base >= 4.7 && < 5
@@ -14,16 +27,13 @@ default-extensions:
 - RecordWildCards
 - TypeApplications
 
-# The library contains all of our application code. The executable
-# defined below is just a thin wrapper.
 library:
   source-dirs: src
 
-# Test suite
 tests:
   derive-has-field-test:
     main: Spec.hs
     source-dirs: test
     dependencies:
     - derive-has-field
-    - hspec
+    - hspec >= 2.10.10 && < 2.11
