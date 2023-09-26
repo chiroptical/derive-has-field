@@ -21,4 +21,15 @@ ghcid: hpack
 hlint: hpack
 	hlint .
 
-.PHONY: build hpack test run format-haskell format-nix format ghcid hlint
+# Add version bounds automatically
+bounds: hpack
+	cabal gen-bounds
+
+# Mostly documentation for future uploads
+hackage: hpack
+	cabal new-haddock --haddock-for-hackage derive-has-field
+	cabal new-sdist
+	# cabal upload --publish dist-newstyle/sdist/derive-has-field-0.1.0.0.tar.gz
+	# cabal upload --publish -d dist-newstyle/derive-has-field-0.1.0.0-docs.tar.gz
+
+.PHONY: build hpack test run format-haskell format-nix format ghcid hlint bounds hackage
