@@ -12,6 +12,7 @@ import Control.Monad
 import Data.Char (toLower)
 import Data.Foldable as Foldable
 import Data.Traversable (for)
+import Debug.Trace
 import GHC.Records
 import Language.Haskell.TH
 import Language.Haskell.TH.Datatype
@@ -23,7 +24,7 @@ makeDeriveHasField :: (String -> String) -> DatatypeInfo -> DecsQ
 makeDeriveHasField fieldModifier datatypeInfo = do
   -- We do not support sum of product types
   constructorInfo <- case datatypeInfo.datatypeCons of
-    [info] -> pure info
+    [info] -> trace (show datatypeInfo) $ pure info
     _ -> fail "deriveHasField: only supports product types with a single data constructor"
 
   -- We only support data and newtype declarations
