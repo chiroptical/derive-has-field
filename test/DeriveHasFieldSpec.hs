@@ -26,18 +26,18 @@ someType =
     , someTypeSomeEitherField = Right 0
     }
 
-data OtherType a = OtherType
+data OtherType a b = OtherType
   { otherTypeField :: Maybe a
-  , otherTypeOtherField :: Maybe a
+  , otherTypeOtherField :: Either a b
   }
 
 deriveHasFieldWith (dropPrefix "otherType") ''OtherType
 
-otherType :: OtherType Int
+otherType :: OtherType Int String
 otherType =
   OtherType
     { otherTypeField = Just 0
-    , otherTypeOtherField = Nothing
+    , otherTypeOtherField = Right "hello"
     }
 
 spec :: Spec
@@ -50,4 +50,4 @@ spec = do
       someType.someEitherField `shouldBe` Right 0
     it "compiles and gets the right field" $ do
       otherType.field `shouldBe` Just 0
-      otherType.otherField `shouldBe` Nothing
+      otherType.otherField `shouldBe` Right "hello"
