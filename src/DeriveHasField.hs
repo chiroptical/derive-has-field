@@ -44,16 +44,16 @@ makeDeriveHasField fieldModifier datatypeInfo = do
   -- Build the instances
   let constructorNamesAndTypes :: [(Name, Type)]
       constructorNamesAndTypes = zip recordConstructorNames constructorInfo.constructorFields
+      parentType =
+        foldl'
+          (\acc var -> appT acc (varT $ tyVarBndrToName var))
+          (conT datatypeInfo.datatypeName)
+          datatypeInfo.datatypeVars
   decs <- for constructorNamesAndTypes $ \(name, ty) ->
     let currentFieldName = nameBase name
         wantedFieldName = lowerFirst $ fieldModifier currentFieldName
         litTCurrentField = litT $ strTyLit currentFieldName
         litTFieldWanted = litT $ strTyLit wantedFieldName
-        parentType =
-          foldl'
-            (\acc var -> appT acc (varT $ tyVarBndrToName var))
-            (conT datatypeInfo.datatypeName)
-            datatypeInfo.datatypeVars
      in if currentFieldName == wantedFieldName
           then fail "deriveHasField: after applying fieldModifier, field didn't change"
           else
