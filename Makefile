@@ -18,6 +18,9 @@ format: format-nix format-haskell
 ghcid: hpack
 	ghcid -c "cabal --ghc-options='${GHC_OPTIONS}' repl"
 
+ghcid-test: hpack
+	ghcid -c "cabal --ghc-options='${GHC_OPTIONS}' repl derive-has-field-test"
+
 hlint: hpack
 	hlint .
 
@@ -32,4 +35,4 @@ hackage: hpack
 	# cabal upload --publish dist-newstyle/sdist/derive-has-field-0.1.0.0.tar.gz
 	# cabal upload --publish -d dist-newstyle/derive-has-field-0.1.0.0-docs.tar.gz
 
-.PHONY: build hpack test run format-haskell format-nix format ghcid hlint bounds hackage
+.PHONY: build hpack test run format-haskell format-nix format ghcid ghcid-test hlint bounds hackage

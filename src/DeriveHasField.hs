@@ -44,17 +44,21 @@ makeDeriveHasField fieldModifier datatypeInfo = do
   -- Build the instances
   let constructorNamesAndTypes :: [(Name, Type)]
       constructorNamesAndTypes = zip recordConstructorNames constructorInfo.constructorFields
+      parentType =
+        foldl'
+          (\acc var -> appT acc (varT $ tyVarBndrToName var))
+          (conT datatypeInfo.datatypeName)
+          datatypeInfo.datatypeVars
   decs <- for constructorNamesAndTypes $ \(name, ty) ->
     let currentFieldName = nameBase name
         wantedFieldName = lowerFirst $ fieldModifier currentFieldName
         litTCurrentField = litT $ strTyLit currentFieldName
         litTFieldWanted = litT $ strTyLit wantedFieldName
-        parentTypeConstructor = conT datatypeInfo.datatypeName
      in if currentFieldName == wantedFieldName
           then fail "deriveHasField: after applying fieldModifier, field didn't change"
           else
             [d|
-              instance HasField $litTFieldWanted $parentTypeConstructor $(pure ty) where
+              instance HasField $litTFieldWanted $parentType $(pure ty) where
                 getField = $(appTypeE (varE $ mkName "getField") litTCurrentField)
               |]
   pure $ Foldable.concat decs
@@ -63,3 +67,8 @@ lowerFirst :: String -> String
 lowerFirst = \case
   [] -> []
   (x : xs) -> toLower x : xs
+
+tyVarBndrToName :: TyVarBndr flag -> Name
+tyVarBndrToName = \case
+  PlainTV name _ -> name
+  KindedTV name _ _ -> name
