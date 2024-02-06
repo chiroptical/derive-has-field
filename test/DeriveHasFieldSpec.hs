@@ -1,15 +1,15 @@
 {-# LANGUAGE DataKinds #-}
+{-# LANGUAGE KindSignatures #-}
 {-# LANGUAGE OverloadedRecordDot #-}
 {-# LANGUAGE TemplateHaskell #-}
-{-# LANGUAGE KindSignatures #-}
 
 module DeriveHasFieldSpec where
 
+import Data.Data (Proxy (..))
 import DeriveHasField
+import GHC.TypeLits (Symbol)
 import Import
 import Test.Hspec
-import GHC.TypeLits (Symbol)
-import Data.Data (Proxy (..))
 
 data SomeType = SomeType
   { someTypeSomeField :: String
@@ -43,7 +43,7 @@ otherType =
     , otherTypeOtherField = Right "hello"
     }
 
-data KindedType (kind :: *  -> *) (sym :: Symbol) = KindedType
+data KindedType (kind :: * -> *) (sym :: Symbol) = KindedType
   { kindedTypeWithKind :: kind ()
   , kindedTypeWithSymbol :: Proxy sym
   }
