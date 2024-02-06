@@ -1,10 +1,13 @@
 {-# LANGUAGE DataKinds #-}
+{-# LANGUAGE KindSignatures #-}
 {-# LANGUAGE OverloadedRecordDot #-}
 {-# LANGUAGE TemplateHaskell #-}
 
 module DeriveHasFieldSpec where
 
+import Data.Data (Proxy (..))
 import DeriveHasField
+import GHC.TypeLits (Symbol)
 import Import
 import Test.Hspec
 
@@ -40,6 +43,20 @@ otherType =
     , otherTypeOtherField = Right "hello"
     }
 
+data KindedType (kind :: * -> *) (sym :: Symbol) = KindedType
+  { kindedTypeWithKind :: kind ()
+  , kindedTypeWithSymbol :: Proxy sym
+  }
+
+deriveHasFieldWith (dropPrefix "kindedType") ''KindedType
+
+kindedType :: KindedType Maybe "hello"
+kindedType =
+  KindedType
+    { kindedTypeWithKind = Just ()
+    , kindedTypeWithSymbol = Proxy @"hello"
+    }
+
 spec :: Spec
 spec = do
   describe "deriveHasField" $ do
@@ -51,3 +68,6 @@ spec = do
     it "compiles and gets the right field" $ do
       otherType.field `shouldBe` Just 0
       otherType.otherField `shouldBe` Right "hello"
+    it "compiles and gets the right field" $ do
+      kindedType.withKind `shouldBe` Just ()
+      kindedType.withSymbol `shouldBe` Proxy @"hello"
