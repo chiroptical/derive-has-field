@@ -3,7 +3,6 @@
 {-# LANGUAGE TemplateHaskell #-}
 
 module DeriveHasField (
-  module GHC.Records,
   deriveHasFieldWith,
 )
 where
@@ -59,7 +58,7 @@ makeDeriveHasField fieldModifier datatypeInfo = do
           else
             [d|
               instance HasField $litTFieldWanted $parentType $(pure ty) where
-                getField = $(appTypeE (varE $ mkName "getField") litTCurrentField)
+                getField = $(appTypeE (varE 'getField) litTCurrentField)
               |]
   pure $ Foldable.concat decs
 
