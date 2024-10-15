@@ -6,7 +6,7 @@
 module DeriveHasFieldSpec where
 
 import Data.Data (Proxy (..))
-import DeriveHasField
+import DeriveHasField qualified
 import GHC.TypeLits (Symbol)
 import Import
 import Test.Hspec
@@ -18,7 +18,7 @@ data SomeType = SomeType
   , someTypeSomeEitherField :: Either String Int
   }
 
-deriveHasFieldWith (dropPrefix "someType") ''SomeType
+DeriveHasField.deriveHasFieldWith (dropPrefix "someType") ''SomeType
 
 someType :: SomeType
 someType =
@@ -34,7 +34,7 @@ data OtherType a b = OtherType
   , otherTypeOtherField :: Either a b
   }
 
-deriveHasFieldWith (dropPrefix "otherType") ''OtherType
+DeriveHasField.deriveHasFieldWith (dropPrefix "otherType") ''OtherType
 
 otherType :: OtherType Int String
 otherType =
@@ -48,7 +48,7 @@ data KindedType (kind :: * -> *) (sym :: Symbol) = KindedType
   , kindedTypeWithSymbol :: Proxy sym
   }
 
-deriveHasFieldWith (dropPrefix "kindedType") ''KindedType
+DeriveHasField.deriveHasFieldWith (dropPrefix "kindedType") ''KindedType
 
 kindedType :: KindedType Maybe "hello"
 kindedType =

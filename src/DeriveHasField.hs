@@ -56,10 +56,10 @@ makeDeriveHasField fieldModifier datatypeInfo = do
         litTFieldWanted = litT $ strTyLit wantedFieldName
      in if currentFieldName == wantedFieldName
           then fail "deriveHasField: after applying fieldModifier, field didn't change"
-          else
+          else do
             [d|
               instance HasField $litTFieldWanted $parentType $(pure ty) where
-                getField = $(appTypeE (varE $ mkName "getField") litTCurrentField)
+                getField = $(appTypeE (varE 'getField) litTCurrentField)
               |]
   pure $ Foldable.concat decs
 
