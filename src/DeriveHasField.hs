@@ -3,7 +3,6 @@
 {-# LANGUAGE TemplateHaskell #-}
 
 module DeriveHasField (
-  module GHC.Records,
   deriveHasFieldWith,
 )
 where
@@ -56,7 +55,7 @@ makeDeriveHasField fieldModifier datatypeInfo = do
         litTFieldWanted = litT $ strTyLit wantedFieldName
      in if currentFieldName == wantedFieldName
           then fail "deriveHasField: after applying fieldModifier, field didn't change"
-          else do
+          else
             [d|
               instance HasField $litTFieldWanted $parentType $(pure ty) where
                 getField = $(appTypeE (varE 'getField) litTCurrentField)
