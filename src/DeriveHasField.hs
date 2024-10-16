@@ -3,6 +3,7 @@
 {-# LANGUAGE TemplateHaskell #-}
 
 module DeriveHasField (
+  module GHC.Records,
   deriveHasFieldWith,
 )
 where
