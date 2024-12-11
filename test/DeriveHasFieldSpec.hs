@@ -18,7 +18,7 @@ data SomeType = SomeType
   , someTypeSomeEitherField :: Either String Int
   }
 
-DeriveHasField.deriveHasFieldWith (dropPrefix "someType") ''SomeType
+DeriveHasField.deriveHasField ''SomeType
 
 someType :: SomeType
 someType =
@@ -29,12 +29,30 @@ someType =
     , someTypeSomeEitherField = Right 0
     }
 
+data SomeTypePrefix = SomeTypePrefix
+  { someTypePrefixSomeField :: String
+  , someTypePrefixSomeOtherField :: Int
+  , someTypePrefixSomeMaybeField :: Maybe Int
+  , someTypePrefixSomeEitherField :: Either String Int
+  }
+
+DeriveHasField.deriveHasFieldWith (dropPrefix "someTypePrefix") ''SomeTypePrefix
+
+someTypePrefix :: SomeTypePrefix
+someTypePrefix =
+  SomeTypePrefix
+    { someTypePrefixSomeField = "hello"
+    , someTypePrefixSomeOtherField = 0
+    , someTypePrefixSomeMaybeField = Just 0
+    , someTypePrefixSomeEitherField = Right 0
+    }
+
 data OtherType a b = OtherType
   { otherTypeField :: Maybe a
   , otherTypeOtherField :: Either a b
   }
 
-DeriveHasField.deriveHasFieldWith (dropPrefix "otherType") ''OtherType
+DeriveHasField.deriveHasField ''OtherType
 
 otherType :: OtherType Int String
 otherType =
@@ -43,18 +61,46 @@ otherType =
     , otherTypeOtherField = Right "hello"
     }
 
+data OtherTypePrefix a b = OtherTypePrefix
+  { otherTypePrefixField :: Maybe a
+  , otherTypePrefixOtherField :: Either a b
+  }
+
+DeriveHasField.deriveHasFieldWith (dropPrefix "otherTypePrefix") ''OtherTypePrefix
+
+otherTypePrefix :: OtherTypePrefix Int String
+otherTypePrefix =
+  OtherTypePrefix
+    { otherTypePrefixField = Just 0
+    , otherTypePrefixOtherField = Right "hello"
+    }
+
 data KindedType (kind :: * -> *) (sym :: Symbol) = KindedType
   { kindedTypeWithKind :: kind ()
   , kindedTypeWithSymbol :: Proxy sym
   }
 
-DeriveHasField.deriveHasFieldWith (dropPrefix "kindedType") ''KindedType
+DeriveHasField.deriveHasField ''KindedType
 
 kindedType :: KindedType Maybe "hello"
 kindedType =
   KindedType
     { kindedTypeWithKind = Just ()
     , kindedTypeWithSymbol = Proxy @"hello"
+    }
+
+data KindedTypePrefix (kind :: * -> *) (sym :: Symbol) = KindedTypePrefix
+  { kindedTypePrefixWithKind :: kind ()
+  , kindedTypePrefixWithSymbol :: Proxy sym
+  }
+
+DeriveHasField.deriveHasFieldWith (dropPrefix "kindedTypePrefix") ''KindedTypePrefix
+
+kindedTypePrefix :: KindedTypePrefix Maybe "hello"
+kindedTypePrefix =
+  KindedTypePrefix
+    { kindedTypePrefixWithKind = Just ()
+    , kindedTypePrefixWithSymbol = Proxy @"hello"
     }
 
 spec :: Spec
@@ -71,3 +117,16 @@ spec = do
     it "compiles and gets the right field" $ do
       kindedType.withKind `shouldBe` Just ()
       kindedType.withSymbol `shouldBe` Proxy @"hello"
+
+  describe "deriveHasFieldWith" $ do
+    it "compiles and gets the right field" $ do
+      someTypePrefix.someField `shouldBe` "hello"
+      someTypePrefix.someOtherField `shouldBe` 0
+      someTypePrefix.someMaybeField `shouldBe` Just 0
+      someTypePrefix.someEitherField `shouldBe` Right 0
+    it "compiles and gets the right field" $ do
+      otherTypePrefix.field `shouldBe` Just 0
+      otherTypePrefix.otherField `shouldBe` Right "hello"
+    it "compiles and gets the right field" $ do
+      kindedTypePrefix.withKind `shouldBe` Just ()
+      kindedTypePrefix.withSymbol `shouldBe` Proxy @"hello"

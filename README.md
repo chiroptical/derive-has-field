@@ -30,6 +30,9 @@ data BankAccount =
     { bankAccountAccountNumber :: String
     }
 
+deriveHasField ''BankAccount
+
+-- alternatively, for prefixes that don't match the data constructor name
 deriveHasFieldWith (dropPrefix "bankAccount") ''BankAccount
 ```
 
