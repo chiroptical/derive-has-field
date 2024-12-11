@@ -4,6 +4,7 @@
 
 module DeriveHasField (
   module GHC.Records,
+  deriveHasField,
   deriveHasFieldWith,
 )
 where
@@ -11,6 +12,8 @@ where
 import Control.Monad
 import Data.Char (toLower)
 import Data.Foldable as Foldable
+import Data.List (stripPrefix)
+import Data.Maybe (fromMaybe)
 import Data.Traversable (for)
 import GHC.Records
 import Language.Haskell.TH
@@ -18,6 +21,15 @@ import Language.Haskell.TH.Datatype
 
 deriveHasFieldWith :: (String -> String) -> Name -> DecsQ
 deriveHasFieldWith fieldModifier = makeDeriveHasField fieldModifier <=< reifyDatatype
+
+deriveHasField :: Name -> DecsQ
+deriveHasField name = do
+  datatypeInfo <- reifyDatatype name
+  constructorInfo <- case datatypeInfo.datatypeCons of
+    [info] -> pure info
+    _ -> fail "deriveHasField: only supports product types with a single data constructor"
+  let dropPrefix prefix input = fromMaybe input $ stripPrefix prefix input
+  makeDeriveHasField (dropPrefix $ lowerFirst $ nameBase constructorInfo.constructorName) datatypeInfo
 
 makeDeriveHasField :: (String -> String) -> DatatypeInfo -> DecsQ
 makeDeriveHasField fieldModifier datatypeInfo = do
