@@ -32,7 +32,7 @@ data BankAccount =
 
 deriveHasField ''BankAccount
 
--- alternatively, for prefixes that don't match the data constructor name
+-- alternatively, for prefixes that don't match the type name
 deriveHasFieldWith (dropPrefix "bankAccount") ''BankAccount
 ```
 
