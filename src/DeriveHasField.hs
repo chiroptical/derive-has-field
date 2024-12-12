@@ -19,17 +19,48 @@ import GHC.Records
 import Language.Haskell.TH
 import Language.Haskell.TH.Datatype
 
+{- |
+Removes the type's name as a prefix on all fields
+
+If you just want to use the name of the type as a prefix, see 'deriveHasField'
+
+Example usage:
+
+@
+data BankAccount = BankAccount
+  { bankAccAccountNumber :: String
+  , bankAccBalance :: Dollar
+  }
+deriveHasFieldWith (dropPrefix "bankAcc") ''BankAccount
+@
+
+This lets you use record dot syntax like  @myBankAccount.accountNumber@ or @myBankAccount.balance@
+-}
 deriveHasFieldWith :: (String -> String) -> Name -> DecsQ
 deriveHasFieldWith fieldModifier = makeDeriveHasField fieldModifier <=< reifyDatatype
 
+{- |
+Removes the type's name as a prefix on all fields
+
+To use a custom prefix, or any function from field names to the result, see 'deriveHasFieldWith'
+
+Example usage:
+
+@
+data BankAccount = BankAccount
+  { bankAccountAccountNumber :: String
+  , bankAccountBalance :: Dollar
+  }
+deriveHasField ''BankAccount
+@
+
+This lets you use record dot syntax like @myBankAccount.accountNumber@ or @myBankAccount.balance@
+-}
 deriveHasField :: Name -> DecsQ
 deriveHasField name = do
   datatypeInfo <- reifyDatatype name
-  constructorInfo <- case datatypeInfo.datatypeCons of
-    [info] -> pure info
-    _ -> fail "deriveHasField: only supports product types with a single data constructor"
   let dropPrefix prefix input = fromMaybe input $ stripPrefix prefix input
-  makeDeriveHasField (dropPrefix $ lowerFirst $ nameBase constructorInfo.constructorName) datatypeInfo
+  makeDeriveHasField (dropPrefix $ lowerFirst $ nameBase datatypeInfo.datatypeName) datatypeInfo
 
 makeDeriveHasField :: (String -> String) -> DatatypeInfo -> DecsQ
 makeDeriveHasField fieldModifier datatypeInfo = do

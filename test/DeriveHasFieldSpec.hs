@@ -103,6 +103,21 @@ kindedTypePrefix =
     , kindedTypePrefixWithSymbol = Proxy @"hello"
     }
 
+-- mismatched type constructor and data constructor name
+data TypeConstructor = DataConstructor
+  { typeConstructorField :: String
+  , typeConstructorOtherField :: Int
+  }
+
+DeriveHasField.deriveHasField ''TypeConstructor
+
+typeConstructorValue :: TypeConstructor
+typeConstructorValue =
+  DataConstructor
+    { typeConstructorField = "hello"
+    , typeConstructorOtherField = 0
+    }
+
 spec :: Spec
 spec = do
   describe "deriveHasField" $ do
@@ -117,6 +132,9 @@ spec = do
     it "compiles and gets the right field" $ do
       kindedType.withKind `shouldBe` Just ()
       kindedType.withSymbol `shouldBe` Proxy @"hello"
+    it "works with a mismatched type constructor and data constructor name" $ do
+      typeConstructorValue.field `shouldBe` "hello"
+      typeConstructorValue.otherField `shouldBe` 0
 
   describe "deriveHasFieldWith" $ do
     it "compiles and gets the right field" $ do
