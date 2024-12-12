@@ -20,7 +20,7 @@ import Language.Haskell.TH
 import Language.Haskell.TH.Datatype
 
 {- |
-Removes the type's name as a prefix on all fields
+Runs a function on all fields to generate HasField instances
 
 If you just want to use the name of the type as a prefix, see 'deriveHasField'
 
