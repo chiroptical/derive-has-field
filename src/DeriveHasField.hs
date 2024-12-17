@@ -28,6 +28,8 @@ deriveHasField name = do
   constructorInfo <- case datatypeInfo.datatypeCons of
     [info] -> pure info
     _ -> fail "deriveHasField: only supports product types with a single data constructor"
+  when (nameBase constructorInfo.constructorName /= nameBase datatypeInfo.datatypeName) $
+    fail "deriveHasField: type and data constructor must have the same string representation"
   let dropPrefix prefix input = fromMaybe input $ stripPrefix prefix input
   makeDeriveHasField (dropPrefix $ lowerFirst $ nameBase constructorInfo.constructorName) datatypeInfo
 
