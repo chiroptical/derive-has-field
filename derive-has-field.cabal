@@ -5,7 +5,7 @@ cabal-version: 1.12
 -- see: https://github.com/sol/hpack
 
 name:           derive-has-field
-version:        0.0.1.5
+version:        0.1.0.0
 synopsis:       Derive HasField instances with Template Haskell
 description:    A Template Haskell function to derive HasField instances to utilize OverloadedRecordDot more effectively.
 category:       Template Haskell
