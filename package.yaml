@@ -38,3 +38,4 @@ tests:
     dependencies:
     - derive-has-field
     - hspec >= 2.10.10 && < 2.11
+    - th-test-utils >= 1.2 && < 1.3
