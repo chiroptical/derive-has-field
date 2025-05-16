@@ -6,13 +6,14 @@ module DeriveHasField (
   module GHC.Records,
   deriveHasField,
   deriveHasFieldWith,
+  deriveHasFieldWithPrefix,
 )
 where
 
 import Control.Monad
 import Data.Char (toLower)
 import Data.Foldable as Foldable
-import Data.List (stripPrefix)
+import Data.List (isPrefixOf, stripPrefix)
 import Data.Maybe (fromMaybe)
 import Data.Traversable (for)
 import GHC.Records
@@ -24,14 +25,53 @@ deriveHasFieldWith fieldModifier = makeDeriveHasField fieldModifier <=< reifyDat
 
 deriveHasField :: Name -> DecsQ
 deriveHasField name = do
+  (datatypeInfo, constructorInfo) <- getSingleDataConstructorInfo name
+  fieldNames <- getRecordConstructorFieldNames constructorInfo
+  let prefix = lowerFirst $ nameBase constructorInfo.constructorName
+      dropPrefix input = fromMaybe input $ stripPrefix prefix input
+  validateFieldNames Assumed prefix fieldNames
+  when (nameBase constructorInfo.constructorName /= nameBase datatypeInfo.datatypeName) $
+    fail "deriveHasField: type and data constructor must have the same string representation"
+  makeDeriveHasField dropPrefix datatypeInfo
+
+deriveHasFieldWithPrefix :: String -> Name -> DecsQ
+deriveHasFieldWithPrefix prefix name = do
+  (datatypeInfo, constructorInfo) <- getSingleDataConstructorInfo name
+  fieldNames <- getRecordConstructorFieldNames constructorInfo
+  validateFieldNames Given prefix fieldNames
+  let dropPrefix input = fromMaybe input $ stripPrefix prefix input
+  makeDeriveHasField dropPrefix datatypeInfo
+
+data ValidateFieldNamesVersion = Given | Assumed
+
+validateFieldNamesVersionToHuman :: ValidateFieldNamesVersion -> String
+validateFieldNamesVersionToHuman = \case
+  Given -> "given"
+  Assumed -> "assumed"
+
+validateFieldNames :: ValidateFieldNamesVersion -> String -> [Name] -> Q ()
+validateFieldNames version prefix fieldNames =
+  unless (all (isPrefixOf prefix . nameBase) fieldNames) $ do
+    fail $
+      "deriveHasField: the "
+        <> validateFieldNamesVersionToHuman version
+        <> " prefix `"
+        <> prefix
+        <> "` doesn't match the data constructor names"
+
+getRecordConstructorFieldNames :: ConstructorInfo -> Q [Name]
+getRecordConstructorFieldNames info =
+  case info.constructorVariant of
+    RecordConstructor names -> pure names
+    _ -> fail "deriveHasField: only supports data constructors with field names"
+
+getSingleDataConstructorInfo :: Name -> Q (DatatypeInfo, ConstructorInfo)
+getSingleDataConstructorInfo name = do
   datatypeInfo <- reifyDatatype name
   constructorInfo <- case datatypeInfo.datatypeCons of
     [info] -> pure info
     _ -> fail "deriveHasField: only supports product types with a single data constructor"
-  when (nameBase constructorInfo.constructorName /= nameBase datatypeInfo.datatypeName) $
-    fail "deriveHasField: type and data constructor must have the same string representation"
-  let dropPrefix prefix input = fromMaybe input $ stripPrefix prefix input
-  makeDeriveHasField (dropPrefix $ lowerFirst $ nameBase constructorInfo.constructorName) datatypeInfo
+  pure (datatypeInfo, constructorInfo)
 
 makeDeriveHasField :: (String -> String) -> DatatypeInfo -> DecsQ
 makeDeriveHasField fieldModifier datatypeInfo = do
