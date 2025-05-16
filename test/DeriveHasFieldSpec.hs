@@ -103,6 +103,20 @@ kindedTypePrefix =
     , kindedTypePrefixWithSymbol = Proxy @"hello"
     }
 
+data ExampleWithPrefix = ExampleWithPrefix
+  { ewpHello :: String
+  , ewpWorld :: String
+  }
+
+DeriveHasField.deriveHasFieldWithPrefix "ewp" ''ExampleWithPrefix
+
+someExampleWithPrefix :: ExampleWithPrefix
+someExampleWithPrefix =
+  ExampleWithPrefix
+    { ewpHello = "hello"
+    , ewpWorld = "world"
+    }
+
 spec :: Spec
 spec = do
   describe "deriveHasField" $ do
@@ -130,3 +144,8 @@ spec = do
     it "compiles and gets the right field" $ do
       kindedTypePrefix.withKind `shouldBe` Just ()
       kindedTypePrefix.withSymbol `shouldBe` Proxy @"hello"
+
+  describe "deriveHasFieldWithPrefix" $ do
+    it "compiles and gets the right field" $ do
+      someExampleWithPrefix.hello `shouldBe` "hello"
+      someExampleWithPrefix.world `shouldBe` "world"
