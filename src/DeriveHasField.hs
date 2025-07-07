@@ -81,8 +81,15 @@ makeDeriveHasField fieldModifier datatypeInfo constructorInfo = do
   when (datatypeInfo.datatypeVariant `Foldable.notElem` [Datatype, Newtype]) $
     fail "deriveHasField: only supports data and newtype"
 
-  -- We only support data types with field names
+  -- We only support data types with concrete types or plain polymorphic variables
+  let isSupportedType = \case
+        ConT _ -> True
+        AppT _ _ -> True
+        VarT _ -> True
+        _ -> False
   recordConstructorNames <- getRecordConstructorFieldNames constructorInfo
+  forM_ (Foldable.find (not . isSupportedType) constructorInfo.constructorFields) $ \unsupportedType ->
+    fail $ "deriveHasField: only supports simple field types, but " <> pprint unsupportedType <> " is not"
 
   -- Build the instances
   let constructorNamesAndTypes :: [(Name, Type)]
