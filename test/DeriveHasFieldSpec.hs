@@ -48,8 +48,9 @@ someTypePrefix =
     }
 
 data OtherType a b = OtherType
-  { otherTypeField :: Maybe a
-  , otherTypeOtherField :: Either a b
+  { otherTypeField :: a
+  , otherTypeMaybeField :: Maybe a
+  , otherTypeEitherField :: Either a b
   }
 
 DeriveHasField.deriveHasField ''OtherType
@@ -57,8 +58,9 @@ DeriveHasField.deriveHasField ''OtherType
 otherType :: OtherType Int String
 otherType =
   OtherType
-    { otherTypeField = Just 0
-    , otherTypeOtherField = Right "hello"
+    { otherTypeField = 0
+    , otherTypeMaybeField = Just 0
+    , otherTypeEitherField = Right "hello"
     }
 
 data OtherTypePrefix a b = OtherTypePrefix
@@ -126,8 +128,9 @@ spec = do
       someType.someMaybeField `shouldBe` Just 0
       someType.someEitherField `shouldBe` Right 0
     it "compiles and gets the right field" $ do
-      otherType.field `shouldBe` Just 0
-      otherType.otherField `shouldBe` Right "hello"
+      otherType.field `shouldBe` 0
+      otherType.maybeField `shouldBe` Just 0
+      otherType.eitherField `shouldBe` Right "hello"
     it "compiles and gets the right field" $ do
       kindedType.withKind `shouldBe` Just ()
       kindedType.withSymbol `shouldBe` Proxy @"hello"
