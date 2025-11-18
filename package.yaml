@@ -17,8 +17,8 @@ extra-source-files:
 
 dependencies:
 - base >= 4.7 && < 5
-- template-haskell >= 2.5 && < 2.22
-- th-abstraction > 0.4 && < 0.7
+- template-haskell >= 2.5 && < 2.24
+- th-abstraction > 0.4 && < 0.7.2
 
 default-extensions:
 - DeriveGeneric
