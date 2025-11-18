@@ -11,6 +11,7 @@ pkgs.mkShell {
     haskellPackages.fourmolu
     haskellPackages.haskell-language-server
     alejandra
+    pinact
   ];
   withHoogle = true;
   LANG = "en_US.utf8";
