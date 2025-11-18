@@ -8,7 +8,6 @@ pkgs.mkShell {
     haskellPackages.ghcid
     haskellPackages.hlint
     haskellPackages.hpack
-    haskellPackages.retrie
     haskellPackages.fourmolu
     haskellPackages.haskell-language-server
     alejandra
