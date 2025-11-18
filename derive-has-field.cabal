@@ -65,7 +65,7 @@ test-suite derive-has-field-test
   build-depends:
       base >=4.7 && <5
     , derive-has-field
-    , hspec >=2.10.10 && <2.11
+    , hspec >=2.10.10 && <2.12
     , template-haskell >=2.5 && <2.24
     , th-abstraction >0.4 && <0.8
     , th-test-utils ==1.2.*
