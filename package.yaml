@@ -1,5 +1,5 @@
 name:    derive-has-field
-version: 0.1.2.0
+version: 0.1.2.1
 github: "chiroptical/derive-has-field"
 license: MIT
 author: "Barry Moore II"
@@ -17,8 +17,8 @@ extra-source-files:
 
 dependencies:
 - base >= 4.7 && < 5
-- template-haskell >= 2.5 && < 2.20
-- th-abstraction > 0.4 && < 0.7
+- template-haskell >= 2.5 && < 2.24
+- th-abstraction > 0.4 && < 0.8
 
 default-extensions:
 - DeriveGeneric
@@ -37,5 +37,5 @@ tests:
     source-dirs: test
     dependencies:
     - derive-has-field
-    - hspec >= 2.10.10 && < 2.11
+    - hspec >= 2.10.10 && < 2.12
     - th-test-utils >= 1.2 && < 1.3
